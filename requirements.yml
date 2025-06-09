@@ -1,0 +1,4 @@
+collections:
+  - name: technotim.k3s
+    source: https://github.com/l-nmch/k3s-ansible # Waiting for the PR#647 to be merged
+    type: git

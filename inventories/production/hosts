@@ -1,0 +1,10 @@
+[controlplane]
+cp-pi4-0.phorge
+cp-pi4-1.phorge
+cp-pi4-2.phorge
+
+[master:children]
+controlplane
+
+[k3s_cluster:children]
+master
