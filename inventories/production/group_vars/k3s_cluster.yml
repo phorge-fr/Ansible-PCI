@@ -21,7 +21,7 @@ cilium_iface: "eth0"
 cilium_mode: native # native when nodes on same subnet or using bgp, else set routed
 cilium_tag: v1.17.4 # cilium version tag
 cilium_hubble: true # enable hubble observability relay and ui
-cilium_envoy: true
+cilium_envoy: false
 # if using calico or cilium, you may specify the cluster pod cidr pool
 cluster_cidr: 10.42.0.0/16
 
@@ -93,10 +93,10 @@ kube_vip_tag_version: v0.9.1
 # kube_vip_lb_ip_range: "192.168.30.80-192.168.30.90"
 
 # metallb type frr or native
-# metal_lb_type: native
+metal_lb_type: native
 
 # metallb mode layer2 or bgp
-# metal_lb_mode: layer2
+metal_lb_mode: layer2
 
 # bgp options
 # metal_lb_bgp_my_asn: "64513"
@@ -108,7 +108,7 @@ kube_vip_tag_version: v0.9.1
 # metal_lb_controller_tag_version: v0.14.8
 
 # metallb ip range for load balancer
-# metal_lb_ip_range: 192.168.30.80-192.168.30.90
+metal_lb_ip_range: 10.0.0.10-10.0.0.20
 
 # Only enable if your nodes are proxmox LXC nodes, make sure to configure your proxmox nodes
 # in your hosts.ini file.
