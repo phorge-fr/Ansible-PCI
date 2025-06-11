@@ -21,3 +21,23 @@ ansible-galaxy collection install -r requirements.yml
 ```bash
 ansible -m ping all
 ```
+
+## Deploy main k3s cluster
+
+requirements:
+
+- [k3s group vars](./inventories/production/group_vars/k3s_cluster.yml)
+- [hosts file](./inventories/production/hosts)
+- [collections](#setup)
+
+1. Deploy k3s cluster:
+
+```bash
+ansible-playbook collections/ansible_collections/techno_tim/k3s_ansible/site.yml
+```
+
+2. Get kubeconfig:
+
+```bash
+cat collections/ansible_collections/techno_tim/k3s_ansible/kubeconfig > ~/.kube/config
+```
