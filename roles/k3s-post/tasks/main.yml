@@ -1,0 +1,10 @@
+---
+- name: Ensure nfs-common is installed
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+
+- name: Ensure open-iscsi (iscsiadm) is installed
+  ansible.builtin.apt:
+    name: open-iscsi
+    state: present
