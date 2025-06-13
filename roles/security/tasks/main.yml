@@ -1,0 +1,4 @@
+- name: Setup fail2ban
+  ansible.builtin.import_tasks: fail2ban.yml
+- name: Setup ufw
+  ansible.builtin.import_tasks: ufw.yml

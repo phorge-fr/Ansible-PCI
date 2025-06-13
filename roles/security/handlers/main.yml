@@ -1,0 +1,3 @@
+---
+- name: Import fail2ban handlers
+  ansible.builtin.import_tasks: fail2ban.yml

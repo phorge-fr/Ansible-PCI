@@ -1,0 +1,4 @@
+- name: Run main task in security role
+  hosts: all
+  roles:
+    - security
