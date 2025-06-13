@@ -3,6 +3,15 @@ cp-pi4-0.phorge
 cp-pi4-1.phorge
 cp-pi4-2.phorge
 
+[iaas]
+iaas0.phorge
+iaas1.phorge
+iaas2.phorge
+
+[hpc]
+hpc-gpu.phorge
+hpc-npu.phorge
+
 [master:children]
 controlplane
 
