@@ -1,0 +1,2 @@
+firewall_rules:
+  - { port: 22, proto: tcp, state: present, comment: "SSH" }

@@ -7,7 +7,11 @@
     state: enabled
     policy: deny
 
-- name: Allow SSH through UFW
+- name: Apply firewall rules
   community.general.ufw:
     rule: allow
-    name: OpenSSH
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    from_ip: "{{ item.from_ip | default(omit) }}"
+  loop: "{{ firewall_rules }}"
+  when: firewall_rules is defined
