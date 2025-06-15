@@ -1,0 +1,53 @@
+- name: Write OVN_CTL_OPTS to /etc/default/ovn-central (bootstrap)
+  become: true
+  ansible.builtin.template:
+    dest: /etc/default/ovn-central
+    src: ovn-central-default-bootstrap.j2
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    local_host: "{{ groups['iaas'][0] }}"
+    all_hosts: "{{ groups['iaas'] }}"
+  delegate_to: "{{ groups['iaas'][0] }}"
+  run_once: true
+
+- name: Write OVN_CTL_OPTS to /etc/default/ovn-central (non-bootstrap)
+  become: true
+  ansible.builtin.template:
+    dest: /etc/default/ovn-central
+    src: ovn-central-default.j2
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    local_host: "{{ inventory_hostname }}"
+    all_hosts: "{{ groups['iaas'] }}"
+    first_host: "{{ groups['iaas'][0] }}"
+  when: inventory_hostname not in groups['iaas'][:1]
+
+- name: Set OVN remote addresses fact (use IPs, not hostnames)
+  set_fact:
+    ovn_remote_addresses: >-
+      {{ groups['iaas'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '^', 'tcp:') | map('regex_replace', '$', ':6642') | join(',') }}
+  when: groups['iaas'] | length > 1
+  delegate_to: localhost
+
+- name: Set OVN external_ids on each node
+  become: true
+  ansible.builtin.command: >
+    ovs-vsctl set open_vswitch .
+    external_ids:ovn-remote={{ ovn_remote_addresses }}
+    external_ids:ovn-encap-type=geneve
+    external_ids:ovn-encap-ip={{ ansible_host }}
+  when: ovn_remote_addresses is defined
+
+- name: Restart ovn-host
+  ansible.builtin.service:
+    name: ovn-host
+    state: restarted
+
+- name: Restart ovn-central
+  ansible.builtin.service:
+    name: ovn-central
+    state: restarted

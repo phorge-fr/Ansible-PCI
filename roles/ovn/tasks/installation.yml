@@ -1,0 +1,18 @@
+- name: Install ovn-central and ovn-host
+  become: true
+  ansible.builtin.apt:
+    name:
+      - ovn-central
+      - ovn-host
+    state: present
+    update_cache: true
+
+- name: Ensure OVN services are enabled and started
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - ovn-central
+    - ovn-host
