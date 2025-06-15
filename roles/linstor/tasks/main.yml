@@ -1,0 +1,9 @@
+---
+- name: Install dependencies for Linstor
+  ansible.builtin.import_tasks: sources.yml
+- name: Install Linstor required packages and roles
+  ansible.builtin.import_tasks: installation.yml
+- name: Configure Linstor cluster
+  ansible.builtin.import_tasks: cluster.yml
+- name: Configure Linstor pools
+  ansible.builtin.import_tasks: pools.yml

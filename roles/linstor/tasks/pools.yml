@@ -1,0 +1,64 @@
+- name: Gather disks to wipe for this host
+  ansible.builtin.set_fact:
+    linstor_disks_to_wipe: >-
+      {{
+        linstor.hosts[inventory_hostname].pools
+        | selectattr('wipe', 'defined')
+        | selectattr('wipe')
+        | map(attribute='devices')
+        | list
+        | sum(start=[])
+      }}
+
+- name: Get all storage pools from linstor in JSON
+  ansible.builtin.command: linstor -m storage-pool list
+  register: linstor_storage_pools_raw
+  delegate_to: "{{ groups['iaas'][0] }}"
+  when: linstor.hosts[inventory_hostname].pools is defined and linstor.hosts[inventory_hostname].pools | length > 0
+  changed_when: false
+
+- name: Parse linstor storage pool JSON
+  ansible.builtin.set_fact:
+    linstor_storage_pools: "{{ (linstor_storage_pools_raw.stdout | from_json)[0] }}"
+  delegate_to: "{{ groups['iaas'][0] }}"
+  when: linstor_storage_pools_raw.stdout | length > 0
+- name: Check if all expected pools exist on this host
+  ansible.builtin.set_fact:
+    all_pools_present: >-
+      {{
+        linstor.hosts[inventory_hostname].pools | default([]) | map(attribute='name') | difference(
+          linstor_storage_pools | selectattr('node_name', 'equalto', inventory_hostname) | map(attribute='storage_pool_name') | list
+        ) | length == 0
+      }}
+  delegate_to: "{{ groups['iaas'][0] }}"
+
+- name: Show result
+  ansible.builtin.debug:
+    msg: "All expected pools present: {{ all_pools_present }}"
+  delegate_to: "{{ groups['iaas'][0] }}"
+
+- name: Wipe all disks for all pools (if wipe is true)
+  ansible.builtin.command: wipefs -af {{ item }}
+  loop: "{{ linstor_disks_to_wipe }}"
+  when:
+    - linstor_disks_to_wipe | length > 0
+    - not all_pools_present
+  changed_when: false
+
+- name: Create Linstor storage pools
+  ansible.builtin.command: >
+    linstor physical-storage create-device-pool
+    --storage-pool {{ item.name }}
+    --pool-name {{ item.name }}
+    {{ item.type }}
+    {{ inventory_hostname }}
+    {{ item.devices | join(',') }}
+  when:
+    - linstor.hosts[inventory_hostname].pools is defined
+    - linstor.hosts[inventory_hostname].pools | length > 0
+    - not all_pools_present
+  changed_when: false
+  loop: "{{ linstor.hosts[inventory_hostname].pools | default([]) }}"
+  loop_control:
+    loop_var: item
+  delegate_to: "{{ groups['iaas'][0] }}"

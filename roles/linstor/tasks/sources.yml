@@ -1,0 +1,20 @@
+- name: Download LINBIT keyring package
+  ansible.builtin.get_url:
+    url: https://packages.linbit.com/public/linbit-keyring.deb
+    dest: /tmp/linbit-keyring.deb
+    mode: '0644'
+
+- name: Install LINBIT keyring package
+  ansible.builtin.apt:
+    deb: /tmp/linbit-keyring.deb
+
+- name: Add LINBIT repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/linbit.list
+    content: |
+      deb [signed-by=/etc/apt/trusted.gpg.d/linbit-keyring.gpg] http://packages.linbit.com/public/ proxmox-{{ linstor.pvers | default(8) }} drbd-9
+    mode: '0644'
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true

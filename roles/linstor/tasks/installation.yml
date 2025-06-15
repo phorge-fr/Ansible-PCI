@@ -1,0 +1,17 @@
+- name: Install Linstor and dependencies
+  ansible.builtin.apt:
+    name:
+      - linux-headers-amd64
+      - drbd-dkms
+      - lvm2
+      - linstor-client
+    state: present
+    update_cache: true
+
+- name: Install Linstor roles
+  ansible.builtin.apt:
+    name: "linstor-{{ item }}"
+    state: present
+    update_cache: false
+  loop: "{{ linstor.hosts[inventory_hostname].roles | default([]) }}"
+  when: linstor.hosts[inventory_hostname] is defined
