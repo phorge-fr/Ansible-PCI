@@ -1,5 +1,10 @@
-- name: Post install configuration & installations on k3s nodes
+- name: Post-install tasks for k3s control plane
   hosts: controlplane
   become: true
-  roles:
-    - k3s-post
+  tasks:
+    - name: Ensure nfs-common & open-iscsi are installed
+      ansible.builtin.apt:
+        name:
+          - nfs-common
+          - open-iscsi
+        state: present
