@@ -2,4 +2,4 @@
 - name: Install OVN required packages and roles
   ansible.builtin.import_tasks: installation.yml
 - name: Configure OVN cluster
-  ansible.builtin.import_tasks: clusterize.yml
+  ansible.builtin.import_tasks: cluster.yml
