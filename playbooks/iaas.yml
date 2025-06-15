@@ -1,0 +1,6 @@
+- name: Setup IaaS Cluster
+  hosts: iaas
+  roles:
+    # - linstor
+    - ovn
+    # - security

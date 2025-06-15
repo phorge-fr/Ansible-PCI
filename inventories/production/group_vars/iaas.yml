@@ -1,2 +1,43 @@
 firewall_rules:
   - { port: 22, proto: tcp, state: present, comment: "SSH" }
+  - { port: 3370, proto: tcp, state: present, comment: "LINSTOR CONTROLLER" }
+  - { port: 3366, proto: tcp, state: present, comment: "LINSTOR SATELLITE" }
+  - { port: 6641, proto: tcp, state: present, comment: "OVN NB DB" }
+  - { port: 6642, proto: tcp, state: present, comment: "OVN SB DB" }
+
+linstor:
+  pvers: 8
+  hosts:
+    iaas0.phorge:
+      roles:
+        - controller
+        - satellite
+        - gui
+      pools:
+        - name: nvme_pool
+          type: lvmthin
+          devices:
+            - /dev/nvme0n1
+          wipe: true
+    iaas1.phorge:
+      roles:
+        - controller
+        - satellite
+        - gui
+      pools:
+        - name: nvme_pool
+          type: lvmthin
+          devices:
+            - /dev/nvme0n1
+          wipe: true
+    iaas2.phorge:
+      roles:
+        - controller
+        - satellite
+        - gui
+      pools:
+        - name: nvme_pool
+          type: lvmthin
+          devices:
+            - /dev/nvme0n1
+          wipe: true
